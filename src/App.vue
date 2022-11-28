@@ -1,13 +1,20 @@
 <script setup>
-	import Navbar from './components/Navbar/index.vue';
+import Navbar from './components/Navbar/index.vue';
+import Sidebar from './components/Sidebar/index.vue';
+import Article from './components/Article/index.vue';
+import { ElContainer, ElAside, ElMain } from 'element-plus'
 </script>
 
 <template>
   <Navbar />
   <div class="common-layout">
-    <el-container>
-      <el-aside width="200px">Aside</el-aside>
-      <el-main>Main</el-main>
-    </el-container>
+    <ElContainer>
+      <ElAside width="256px">
+        <Sidebar>sidebar</Sidebar>
+      </ElAside>
+      <ElMain>
+        <Article />
+      </ElMain>
+    </ElContainer>
   </div>
 </template>

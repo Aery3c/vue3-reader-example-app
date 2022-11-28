@@ -1,4 +1,6 @@
 <script setup>
+import { ElSwitch, ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus';
+
 </script>
 
 <template>
@@ -11,28 +13,24 @@
 
 			<div class="content">
 				<div class="theme-toggle-container">
-					<el-switch size="small" />
-				</div>
-
-				<div class="">
-
+					<ElSwitch size="small" />
 				</div>
 
 				<div class="translation-container">
-					<el-dropdown>
+					<ElDropdown>
 						<svg class="icon" aria-hidden="true">
 							<use xlink:href="#icon-language"></use>
 						</svg>
 						<template #dropdown>
-							<el-dropdown-menu>
-								<el-dropdown-item>Action 1</el-dropdown-item>
-								<el-dropdown-item>Action 2</el-dropdown-item>
-								<el-dropdown-item>Action 3</el-dropdown-item>
-								<el-dropdown-item>Action 4</el-dropdown-item>
-								<el-dropdown-item>Action 5</el-dropdown-item>
-							</el-dropdown-menu>
+							<ElDropdownMenu>
+								<ElDropdownItem>Action 1</ElDropdownItem>
+								<ElDropdownItem>Action 2</ElDropdownItem>
+								<ElDropdownItem>Action 3</ElDropdownItem>
+								<ElDropdownItem>Action 4</ElDropdownItem>
+								<ElDropdownItem>Action 5</ElDropdownItem>
+							</ElDropdownMenu>
 						</template>
-					</el-dropdown>
+					</ElDropdown>
 				</div>
 
 				<div class="github-link-container">
