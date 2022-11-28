@@ -13,6 +13,7 @@
     "@popperjs/core": "^2.11.6",
     "bootstrap": "5.2.3",
     "element-plus": "^2.2.25",
+    "highlighter": "https://github.com/Aery3c/highlighter.git",
     "vue": "^3.2.45"
   },
   "devDependencies": {

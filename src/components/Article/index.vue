@@ -1,20 +1,52 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, shallowRef } from 'vue';
 import { createPopper } from '@popperjs/core';
+import { ElTable, ElTableColumn } from 'element-plus'
+import { generateClientRect } from '@/utils';
+import { dom } from 'highlighter/build/lib';
 
-const rootRef = ref(null);
+const dropdownMenuRef = ref(null);
+const popperRef = shallowRef({ instance: null });
 
+const virtualElement = {
+  getBoundingClientRect: () => generateClientRect(-1000)
+};
 
-function handleMouseUp() {
+onMounted(() => {
+  popperRef.value.instance = createPopper(
+    virtualElement,
+    dropdownMenuRef.value,
+    {
+      placement: 'bottom-start',
+      modifiers: [{ name: 'eventListeners', options: { scroll: false } }]
+    }
+  );
+});
 
+function handleMouseUp (event) {
+  const [ range ] = dom.getAllRange(window.getSelection());
+
+  if (!range.collapsed && range.toString() !== '') {
+    const { x, y } = event;
+    // flew in
+    virtualElement.getBoundingClientRect = () => generateClientRect(x, y);
+  }
+
+  popperRef.value.instance.forceUpdate();
 }
 
+function handleMouseDown () {
 
+}
 
 </script>
 
 <template>
-  <article @mouseup="handleMouseUp" ref="rootRef">
+  <article 
+    @mousedown="handleMouseDown"
+    @mouseup="handleMouseUp" 
+    ref="rootRef"
+  >
     <header>
       <h1>Math: How to Easily Find a Nash Equilibrium in Game Theory</h1>
     </header>
@@ -119,27 +151,24 @@ function handleMouseUp() {
       example of a game that has no Nash equilibrium is shown in the table below.
     </p>
   </article>
-  <ul class="dropdown-menu show">
+  <ul class="dropdown-menu show" ref="dropdownMenuRef">
     <li><button class="dropdown-item mark-button">mark</button></li>
     <li><button class="dropdown-item underline-button">underline</button></li>
   </ul>
-  <!-- <el-dropdown ref="dropdownRef" trigger="contextmenu">
-    <template #dropdown>
-      <el-dropdown-menu>
-        <el-dropdown-item>Action 1</el-dropdown-item>
-        <el-dropdown-item>Action 2</el-dropdown-item>
-        <el-dropdown-item>Action 3</el-dropdown-item>
-      </el-dropdown-menu>
-    </template>
-  </el-dropdown> -->
+
 </template>
 
 <style scoped lang="scss">
-// @import 'bootstrap/scss/_functions';
-// @import 'bootstrap/scss/_variables';
-// @import 'bootstrap/scss/_mixins';
-// @import 'bootstrap/scss/dropdown.scss';
-@import 'bootstrap/scss/bootstrap.scss';
+@import 'bootstrap/scss/_functions';
+@import 'bootstrap/scss/_variables';
+@import 'bootstrap/scss/_mixins';
+@import 'bootstrap/scss/dropdown.scss';
+
+.dropdown-menu {
+  --bs-dropdown-border-color: #dee2e6;
+  border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
+}
+
 p,
 li {
   line-height: 1.5;
