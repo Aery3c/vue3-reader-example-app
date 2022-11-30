@@ -2,41 +2,53 @@
 import { ref, onMounted, shallowRef } from 'vue';
 import { createPopper } from '@popperjs/core';
 import { ElTable, ElTableColumn } from 'element-plus'
-import { generateClientRect } from '@/utils';
+import { generateClientRect, highlightClientRect } from '@/utils';
 import { dom } from 'highlighter/build/lib';
+import SelectionTooltip from './SelectionTooltip.vue';
 
-const dropdownMenuRef = ref(null);
+const tooltipRef = ref(null);
 const popperRef = shallowRef({ instance: null });
 
 const virtualElement = {
-  getBoundingClientRect: () => generateClientRect(-1000)
+  getBoundingClientRect: () => generateClientRect(-1000),
 };
 
 onMounted(() => {
   popperRef.value.instance = createPopper(
     virtualElement,
-    dropdownMenuRef.value,
+    tooltipRef.value.el,
     {
-      placement: 'bottom-start',
-      modifiers: [{ name: 'eventListeners', options: { scroll: false } }]
+      placement: 'top',
+      modifiers: [
+        { name: 'eventListeners', options: { scroll: false } },
+        { name: 'offset', options: { offset: [0, 8] } }
+      ]
     }
   );
 });
 
-function handleMouseUp (event) {
-  const [ range ] = dom.getAllRange(window.getSelection());
+function handleMouseUp () {
+  const sel = window.getSelection();
+  const [ range ] = dom.getAllRange(sel);
 
-  if (!range.collapsed && range.toString() !== '') {
-    const { x, y } = event;
-    // flew in
-    virtualElement.getBoundingClientRect = () => generateClientRect(x, y);
+  let x = -100, y = 0;
+  console.log(sel.toString());
+  if (!sel.isCollapsed && sel.toString() !== '') {
+    const clientRect = range.getBoundingClientRect();
+
+    // /** test range rect; */
+    // highlightClientRect(range);
+    x = clientRect.x + (clientRect.width / 2);
+    y = clientRect.y;
   }
+
+  virtualElement.getBoundingClientRect = () => generateClientRect(x, y);
 
   popperRef.value.instance.forceUpdate();
 }
 
 function handleMouseDown () {
-
+  window.getSelection().removeAllRanges();
 }
 
 </script>
@@ -151,11 +163,8 @@ function handleMouseDown () {
       example of a game that has no Nash equilibrium is shown in the table below.
     </p>
   </article>
-  <ul class="dropdown-menu show" ref="dropdownMenuRef">
-    <li><button class="dropdown-item mark-button">mark</button></li>
-    <li><button class="dropdown-item underline-button">underline</button></li>
-  </ul>
 
+  <SelectionTooltip ref="tooltipRef"/>
 </template>
 
 <style scoped lang="scss">
@@ -163,12 +172,15 @@ function handleMouseDown () {
 @import 'bootstrap/scss/_variables';
 @import 'bootstrap/scss/_mixins';
 @import 'bootstrap/scss/dropdown.scss';
+@import 'bootstrap/scss/tooltip';
 
 .dropdown-menu {
   --bs-dropdown-border-color: #dee2e6;
   border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
 }
-
+article {
+  padding: 0 10%;
+}
 p,
 li {
   line-height: 1.5;

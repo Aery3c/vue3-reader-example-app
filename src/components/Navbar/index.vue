@@ -49,9 +49,13 @@ import { ElSwitch, ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-pl
 <style scoped lang="scss">
 header {
 	position: sticky;
+	top: 0;
 	width: 100%;
 	height: 60px;
 	border-bottom: 1px solid var(--el-border-color);
+	z-index: 11;
+	backdrop-filter: saturate(50%) blur(4px);
+	background-image: radial-gradient(transparent 1px,var(--el-bg-color) 1px);
 	.nav-bar {
 		display: flex;
 		justify-content: space-between;
