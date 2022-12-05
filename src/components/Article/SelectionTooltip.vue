@@ -1,54 +1,126 @@
 <script setup>
-import { defineProps, ref, shallowRef, onMounted, defineEmits } from 'vue';
+import { shallowRef, onMounted, ref, provide } from "vue";
 import { ElButton, ElIcon, ElButtonGroup } from 'element-plus';
 import { EditPen, Edit, Delete } from '@element-plus/icons-vue';
+import { createPopper } from '@popperjs/core';
+import { generateClientRect } from '@/utils';
 import { Highlighter } from 'highlighter/build/lib';
 
-const { operationType } = defineProps({
-  operationType: {
-    type: String,
-    default: 'highlight' // highlight and remove
-  }
-});
+const HIGHLIGHT = Symbol();
+const REMOVE = Symbol();
 
-const emit = defineEmits(['onHighlighted', 'onAnnotationed', 'onClickHighlightEl']);
+const operationType = ref(HIGHLIGHT);
+const initX = -200;
 
-const el = ref(null);
-
-defineExpose({ el });
-
+const popperRef = shallowRef({ instance: null });
 const highlighterRef = shallowRef({ instance: null });
+const tooltipRef = ref(null);
+const currentHighlights = ref([]);
+
+provide('currentHighlights', currentHighlights);
+
+const virtualElement = {
+  getBoundingClientRect: () => generateClientRect(initX, 0),
+};
+
+function handleMouseup () {
+  operationType.value = HIGHLIGHT;
+  const sel = window.getSelection(), range = sel.getRangeAt(0);
+
+  let x = initX, y = 0;
+
+  if (!sel.isCollapsed && sel.toString() !== '') {
+    const clientRect = range.getBoundingClientRect();
+
+    x = clientRect.x + clientRect.width / 2;
+    y = clientRect.y;
+  }
+
+  updatePopperPosition(x, y);
+}
+
+function handleMousedown () {
+  window.getSelection().removeAllRanges();
+}
+
+function handleClickHighlightBtn () {
+  const highlighter = highlighterRef.value.instance;
+  currentHighlights.value.push(...highlighter.highlightASelection());
+  updatePopperPosition(initX, 0);
+}
+
+let promise;
+async function handleClickHighlightEl (highlight) {
+  operationType.value = REMOVE;
+  const clientRect = highlight.getBoundingClientRect();
+  updatePopperPosition(clientRect.x + clientRect.width / 2, clientRect.y);
+
+  await requireAuthUserClickRemove();
+
+  highlighterRef.value.instance.removeHighlight(highlight);
+}
+
+function handleClickRemoveBtn () {
+  updatePopperPosition(initX, 0);
+  promise.resolve();
+}
+
+async function requireAuthUserClickRemove () {
+  return new Promise(resolve => {
+    promise = { resolve };
+  });
+}
+
+/**
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ */
+function updatePopperPosition (x, y) {
+  virtualElement.getBoundingClientRect = () => generateClientRect(x, y);
+  popperRef.value.instance.forceUpdate();
+}
 
 onMounted(() => {
+  popperRef.value.instance = createPopper(
+    virtualElement,
+    tooltipRef.value,
+    {
+      placement: 'top',
+      modifiers: [
+        { name: 'eventListeners', options: { scroll: false } },
+        { name: 'offset', options: { offset: [0, 8] } }
+      ]
+    }
+  );
+  
   let highlighter = highlighterRef.value.instance = new Highlighter();
-  highlighter.on('click', () => emit('onClickHighlightEl'));
-});
+  highlighter.on('click', handleClickHighlightEl);
 
-function handleClickHighlight () {
-  const highlighter = highlighterRef.value.instance;
-  highlighter.highlightASelection();
-  emit('onHighlighted');
-}
+});
 
 </script>
 
 <template>
-  <div class="highlight-operation" role="tooltip" ref="el">
-    <ElButtonGroup>
-      <template v-if="operationType === 'highlight'">
-        <ElButton type="primary" @click="handleClickHighlight">
-          <ElIcon><EditPen /></ElIcon>
-        </ElButton>
-        <ElButton type="primary">
-          <ElIcon><Edit /></ElIcon>
-        </ElButton>
-      </template>
-      <ElButton type="primary" v-else>
-        <ElIcon><Delete /></ElIcon>Remove Note
+<div @mouseup="handleMouseup" @mousedown="handleMousedown">
+  <slot name="selectionTooltip"></slot>
+</div>
+<div class="highlight-operation" role="tooltip" ref="tooltipRef">
+  <ElButtonGroup>
+    <template v-if="operationType === HIGHLIGHT">
+      <ElButton type="primary" @click="handleClickHighlightBtn">
+        <ElIcon><EditPen /></ElIcon>
       </ElButton>
-    </ElButtonGroup>
-    <div class="highlight-operation-arrow"></div>
-  </div>
+      <ElButton type="primary">
+        <ElIcon><Edit /></ElIcon>
+      </ElButton>
+    </template>
+    <ElButton type="primary" @click="handleClickRemoveBtn" v-else>
+      <ElIcon><Delete /></ElIcon>Remove Note
+    </ElButton>
+  </ElButtonGroup>
+  <div class="highlight-operation-arrow"></div>
+</div>
 </template>
 
 <style scoped lang="scss">
@@ -74,4 +146,11 @@ function handleClickHighlight () {
     transform: rotate(45deg);
   }
 }
+</style>
+
+<style>
+  .highlight {
+    background-color: yellow;
+    cursor: pointer;
+  }
 </style>
