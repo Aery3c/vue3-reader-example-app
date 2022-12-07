@@ -10,7 +10,7 @@ import { ElContainer, ElAside, ElMain } from 'element-plus'
   <div class="common-layout">
     <ElContainer>
       <ElAside width="256px">
-        <Sidebar>sidebar</Sidebar>
+        <Sidebar />
       </ElAside>
       <ElMain>
         <Article />

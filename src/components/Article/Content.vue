@@ -1,8 +1,15 @@
 <script setup>
 import { inject, watch } from 'vue';
 import { ElTable, ElTableColumn } from 'element-plus';
+import { useHighlightsStore } from '@/stores/highlights';
 
+const { replace } = useHighlightsStore();
 const currentHighlights = inject('currentHighlights');
+
+watch(() => currentHighlights.value.length, () => {
+  replace(currentHighlights.value);
+});
+
 </script>
 
 <template>
