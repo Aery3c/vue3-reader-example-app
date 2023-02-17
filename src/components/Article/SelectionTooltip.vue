@@ -4,7 +4,7 @@ import { ElButton, ElIcon, ElButtonGroup } from 'element-plus';
 import { EditPen, Edit, Delete } from '@element-plus/icons-vue';
 import { createPopper } from '@popperjs/core';
 import { generateClientRect } from '@/utils';
-import { Highlighter } from 'highlighter/build/lib';
+import { Highlighter } from 'highlighter';
 
 const HIGHLIGHT = Symbol();
 const REMOVE = Symbol();
@@ -45,19 +45,22 @@ function handleMousedown () {
 
 function handleClickHighlightBtn () {
   const highlighter = highlighterRef.value.instance;
-  currentHighlights.value.push(...highlighter.highlightASelection());
+
+  currentHighlights.value.push(...highlighter.useSelection({ referenceNodeId: 'acticle' }));
   updatePopperPosition(initX, 0);
 }
 
 let promise;
 async function handleClickHighlightEl (highlight) {
   operationType.value = REMOVE;
-  const clientRect = highlight.getBoundingClientRect();
+  const clientRect = highlight.toRange().getBoundingClientRect();
   updatePopperPosition(clientRect.x + clientRect.width / 2, clientRect.y);
 
   await requireAuthUserClickRemove();
 
   highlighterRef.value.instance.removeHighlight(highlight);
+  const index = currentHighlights.value.indexOf(highlight);
+  currentHighlights.value.splice(index, 1);
 }
 
 function handleClickRemoveBtn () {
@@ -93,7 +96,6 @@ onMounted(() => {
       ]
     }
   );
-  
   let highlighter = highlighterRef.value.instance = new Highlighter();
   highlighter.on('click', handleClickHighlightEl);
 

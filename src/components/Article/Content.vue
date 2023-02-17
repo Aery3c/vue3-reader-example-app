@@ -13,7 +13,7 @@ watch(() => currentHighlights.value.length, () => {
 </script>
 
 <template>
-<acticle>
+<acticle id="acticle">
   <header>
     <h1>Math: How to Easily Find a Nash Equilibrium in Game Theory</h1>
   </header>

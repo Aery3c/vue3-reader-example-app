@@ -53,7 +53,7 @@ header {
 	width: 100%;
 	height: 60px;
 	border-bottom: 1px solid var(--el-border-color);
-	z-index: 11;
+	z-index: 999;
 	backdrop-filter: saturate(50%) blur(4px);
 	background-image: radial-gradient(transparent 1px,var(--el-bg-color) 1px);
 	.nav-bar {
