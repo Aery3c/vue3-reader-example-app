@@ -11,7 +11,7 @@ const { highlights } = storeToRefs(useHighlightsStore());
 <template>
   <ElScrollbar class="sidebar">
     <ElSpace direction="vertical" fill size="large">
-      <ElCard v-for="highlight in highlights" shadow="hover">
+      <ElCard v-for="highlight in highlights" :key="highlight" shadow="hover">
         <template #header>
           <div class="card-header">
             <span>Mark</span>
