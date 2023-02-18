@@ -13,12 +13,14 @@ module.exports = {
   },
   rules: {
     'prettier/prettier': [
-      'error',
+      1,
       {
         singleQuote: true,
         parser: 'flow',
-        trailingComma: 'none'
+        trailingComma: 'none',
+        semi: false
       }
-    ]
+    ],
+    'vue/multi-word-component-names': 0
   }
 }
