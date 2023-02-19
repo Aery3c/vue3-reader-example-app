@@ -4,8 +4,15 @@ export const useHighlightsStore = defineStore('highlights', () => {
   const highlights = ref([]);
 
   function replace (hts) {
-    highlights.value = hts;
+    highlights.value = [...hts];
   }
 
-  return { highlights, replace };
+  function remove (ht) {
+    let index;
+    if ((index = highlights.value.indexOf(ht)) !== -1) {
+      highlights.value.splice(index, 1);
+    }
+  }
+
+  return { highlights, replace, remove };
 });

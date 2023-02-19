@@ -2,20 +2,31 @@
 import { storeToRefs } from 'pinia'
 import { ElCard, ElScrollbar, ElButton, ElIcon, ElSpace } from 'element-plus';
 import { MoreFilled } from '@element-plus/icons-vue';
+import { computed } from 'vue';
 import { useHighlightsStore } from '@/stores/highlights';
 
-const { highlights } = storeToRefs(useHighlightsStore());
+const highlightStore = useHighlightsStore();
+const { highlights } = storeToRefs(highlightStore);
+const { remove } = highlightStore;
+
+const sortHighlights = computed(() => [...highlights.value].sort(
+  (a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range))
+);
+
+function handleClickMoreBtn (highlight) {
+  remove(highlight);
+}
 
 </script>
 
 <template>
   <ElScrollbar class="sidebar">
-    <ElSpace direction="vertical" fill size="large">
-      <ElCard v-for="highlight in highlights" :key="highlight" shadow="hover">
+    <ElSpace direction="vertical" fill size="large" class="space">
+      <ElCard v-for="highlight in sortHighlights" :key="highlight" shadow="hover">
         <template #header>
           <div class="card-header">
-            <span>Mark</span>
-            <ElButton text>
+            <span>Range: {{ highlight.characterRange.start }} -> {{ highlight.characterRange.end }}</span>
+            <ElButton text @click="handleClickMoreBtn(highlight)">
               <ElIcon>
                 <MoreFilled />
               </ElIcon>
@@ -33,10 +44,13 @@ const { highlights } = storeToRefs(useHighlightsStore());
   position: fixed;
   width: 256px;
   padding: 24px 32px 0;
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .space {
+    width: 100%;
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 }
 </style>

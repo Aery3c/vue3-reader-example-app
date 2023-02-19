@@ -18,6 +18,7 @@ const tooltipRef = ref(null);
 const currentHighlights = ref([]);
 
 provide('currentHighlights', currentHighlights);
+provide('highlighter', highlighterRef);
 
 const virtualElement = {
   getBoundingClientRect: () => generateClientRect(initX, 0),

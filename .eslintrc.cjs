@@ -18,7 +18,7 @@ module.exports = {
         singleQuote: true,
         parser: 'flow',
         trailingComma: 'none',
-        semi: false
+        semi: true
       }
     ],
     'vue/multi-word-component-names': 0

@@ -1,14 +1,31 @@
 <script setup>
-import { inject, watch } from 'vue';
+import { inject, watch, toRaw } from 'vue';
 import { ElTable, ElTableColumn } from 'element-plus';
 import { useHighlightsStore } from '@/stores/highlights';
+import { storeToRefs } from 'pinia'
+const highlightStore = useHighlightsStore();
+const { replace } = highlightStore;
+const { highlights } = storeToRefs(highlightStore);
+import { differenceWith, isEqual } from 'lodash';
 
-const { replace } = useHighlightsStore();
 const currentHighlights = inject('currentHighlights');
+const highlighter = inject('highlighter');
 
 watch(() => currentHighlights.value.length, () => {
   replace(currentHighlights.value);
 });
+
+watch(highlights, (current) => {
+  if (current.length < currentHighlights.value.length) {
+
+    const removeHighlights = differenceWith(currentHighlights.value, current, isEqual);
+    removeHighlights.forEach(highlight => {
+      highlighter.value.instance.removeHighlight(toRaw(highlight));
+    });
+
+    currentHighlights.value = current;
+  }
+}, { deep: true });
 
 </script>
 
