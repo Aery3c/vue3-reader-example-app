@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { ElCard, ElScrollbar, ElButton, ElIcon, ElSpace } from 'element-plus';
+import { ElCard, ElScrollbar, ElButton, ElIcon, ElSpace, ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus';
 import { MoreFilled } from '@element-plus/icons-vue';
 import { computed } from 'vue';
 import { useHighlightsStore } from '@/stores/highlights';
@@ -25,12 +25,19 @@ function handleClickMoreBtn (highlight) {
       <ElCard v-for="highlight in sortHighlights" :key="highlight" shadow="hover">
         <template #header>
           <div class="card-header">
-            <span>Range: {{ highlight.characterRange.start }} -> {{ highlight.characterRange.end }}</span>
-            <ElButton text @click="handleClickMoreBtn(highlight)">
-              <ElIcon>
-                <MoreFilled />
-              </ElIcon>
-            </ElButton>
+            <ElButton disabled>Range: {{ highlight.characterRange.start }} {{ highlight.characterRange.end }}</ElButton>
+            <ElDropdown>
+              <ElButton text>
+                <ElIcon>
+                  <MoreFilled />
+                </ElIcon>
+              </ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem @click="handleClickMoreBtn(highlight)">remove it</ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
           </div>
         </template>
         {{ highlight.getText() }}
