@@ -150,10 +150,3 @@ onMounted(() => {
   }
 }
 </style>
-
-<style>
-  .highlight {
-    background-color: yellow;
-    cursor: pointer;
-  }
-</style>

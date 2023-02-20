@@ -7,7 +7,6 @@ const highlightStore = useHighlightsStore();
 const { replace } = highlightStore;
 const { highlights } = storeToRefs(highlightStore);
 import { differenceWith, isEqual } from 'lodash';
-
 const currentHighlights = inject('currentHighlights');
 const highlighter = inject('highlighter');
 
@@ -26,7 +25,6 @@ watch(highlights, (current) => {
     currentHighlights.value = current;
   }
 }, { deep: true });
-
 </script>
 
 <template>
@@ -142,4 +140,12 @@ p,
 li {
   line-height: 1.5;
 }
+</style>
+
+<style>
+  .highlight {
+    background-color: rgb(254, 232, 195);
+    cursor: pointer;
+    color: rgb(51, 51, 51);
+  }
 </style>

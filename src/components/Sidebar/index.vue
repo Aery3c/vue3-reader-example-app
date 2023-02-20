@@ -20,7 +20,7 @@ function handleClickMoreBtn (highlight) {
 </script>
 
 <template>
-  <ElScrollbar class="sidebar">
+  <ElScrollbar class="sidebar" height="80%">
     <ElSpace direction="vertical" fill size="large" class="space">
       <ElCard v-for="highlight in sortHighlights" :key="highlight" shadow="hover">
         <template #header>

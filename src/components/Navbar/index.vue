@@ -1,5 +1,10 @@
 <script setup>
-import { ElSwitch, ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus';
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElButton, ElIcon } from 'element-plus';
+import { Sunny, Moon } from '@element-plus/icons-vue';
+import { useDark, useToggle } from '@vueuse/core';
+
+const isDark = useDark();
+const toggle = useToggle(isDark);
 
 </script>
 
@@ -13,33 +18,52 @@ import { ElSwitch, ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-pl
 
 			<div class="content">
 				<div class="theme-toggle-container">
-					<ElSwitch size="small" />
+          <ElDropdown>
+            <ElButton text>
+              <ElIcon>
+                <Moon v-if="isDark" :size="20"/>
+                <Sunny v-else style="width: 2em; height: 2em;"/>
+              </ElIcon>
+              {{ isDark ? 'Dark' : 'Light' }}
+            </ElButton>
+            <template #dropdown>
+              <ElDropdownMenu>
+                <ElDropdownItem @click="toggle()">
+                  <ElIcon>
+                    <Sunny v-if="isDark"/>
+                    <Moon v-else/>
+                  </ElIcon>
+                  {{ isDark ? 'Light' : 'Dark' }}
+                </ElDropdownItem>
+              </ElDropdownMenu>
+            </template>
+          </ElDropdown>
 				</div>
 
-				<div class="translation-container">
-					<ElDropdown>
-						<svg class="icon" aria-hidden="true">
-							<use xlink:href="#icon-language"></use>
-						</svg>
-						<template #dropdown>
-							<ElDropdownMenu>
-								<ElDropdownItem>Action 1</ElDropdownItem>
-								<ElDropdownItem>Action 2</ElDropdownItem>
-								<ElDropdownItem>Action 3</ElDropdownItem>
-								<ElDropdownItem>Action 4</ElDropdownItem>
-								<ElDropdownItem>Action 5</ElDropdownItem>
-							</ElDropdownMenu>
-						</template>
-					</ElDropdown>
-				</div>
+<!--				<div class="translation-container">-->
+<!--					<ElDropdown>-->
+<!--						<svg class="icon" aria-hidden="true">-->
+<!--							<use xlink:href="#icon-language"></use>-->
+<!--						</svg>-->
+<!--						<template #dropdown>-->
+<!--							<ElDropdownMenu>-->
+<!--								<ElDropdownItem>Action 1</ElDropdownItem>-->
+<!--								<ElDropdownItem>Action 2</ElDropdownItem>-->
+<!--								<ElDropdownItem>Action 3</ElDropdownItem>-->
+<!--								<ElDropdownItem>Action 4</ElDropdownItem>-->
+<!--								<ElDropdownItem>Action 5</ElDropdownItem>-->
+<!--							</ElDropdownMenu>-->
+<!--						</template>-->
+<!--					</ElDropdown>-->
+<!--				</div>-->
 
-				<div class="github-link-container">
-					<a href="https://github.com/Aery3c/highlighter/">
-						<svg class="icon" aria-hidden="true">
-							<use xlink:href="#icon-github"></use>
-						</svg>
-					</a>
-				</div>
+<!--				<div class="github-link-container">-->
+<!--					<a href="https://github.com/Aery3c/highlighter/">-->
+<!--						<svg class="icon" aria-hidden="true">-->
+<!--							<use xlink:href="#icon-github"></use>-->
+<!--						</svg>-->
+<!--					</a>-->
+<!--				</div>-->
 
 			</div>
 		</nav>
