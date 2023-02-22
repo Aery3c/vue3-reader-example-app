@@ -1,17 +1,24 @@
 <script setup>
-import { inject, watch, toRaw } from 'vue';
+import { inject, watch, toRaw, onMounted } from 'vue';
 import { ElTable, ElTableColumn } from 'element-plus';
 import { useHighlightsStore } from '@/stores/highlights';
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from 'pinia';
+import { differenceWith, isEqual } from 'lodash';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+// import { localforage } from 'localforage';
+
 const highlightStore = useHighlightsStore();
 const { replace } = highlightStore;
 const { highlights } = storeToRefs(highlightStore);
-import { differenceWith, isEqual } from 'lodash';
 const currentHighlights = inject('currentHighlights');
 const highlighter = inject('highlighter');
 
 watch(() => currentHighlights.value.length, () => {
   replace(currentHighlights.value);
+  axios.post('/update', { highlights: highlighter.value.instance.serialize() }).then(response => {
+    console.log(response);
+  });
 });
 
 watch(highlights, (current) => {
@@ -25,6 +32,18 @@ watch(highlights, (current) => {
     currentHighlights.value = current;
   }
 }, { deep: true });
+
+onMounted(() => {
+  const mock = new MockAdapter(axios);
+  mock.onPost('/update').reply(async function (actual) {
+    const data = JSON.parse(actual.data);
+    console.log(data);
+    // console.log(actual);
+    return [200, {  }];
+  });
+});
+
+
 </script>
 
 <template>
