@@ -1,7 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { ElCard, ElScrollbar, ElButton, ElIcon, ElSpace, ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus';
-import { MoreFilled } from '@element-plus/icons-vue';
+import { ElCard, ElScrollbar, ElButton, ElIcon, ElSpace, ElPopconfirm } from 'element-plus';
+import { Delete } from '@element-plus/icons-vue';
 import { computed } from 'vue';
 import { useHighlightsStore } from '@/stores/highlights';
 
@@ -26,18 +26,15 @@ function handleClickMoreBtn (highlight) {
         <template #header>
           <div class="card-header">
             <ElButton disabled>Range: {{ highlight.characterRange.start }} {{ highlight.characterRange.end }}</ElButton>
-            <ElDropdown>
-              <ElButton text>
-                <ElIcon>
-                  <MoreFilled />
-                </ElIcon>
-              </ElButton>
-              <template #dropdown>
-                <ElDropdownMenu>
-                  <ElDropdownItem @click="handleClickMoreBtn(highlight)">remove it</ElDropdownItem>
-                </ElDropdownMenu>
+            <ElPopconfirm title="Are you sure to delete this?" @confirm="handleClickMoreBtn(highlight)">
+              <template #reference>
+                <ElButton text>
+                  <ElIcon>
+                    <Delete />
+                  </ElIcon>
+                </ElButton>
               </template>
-            </ElDropdown>
+            </ElPopconfirm>
           </div>
         </template>
         {{ highlight.getText() }}
