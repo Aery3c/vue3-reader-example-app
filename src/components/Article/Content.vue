@@ -4,9 +4,8 @@ import { ElTable, ElTableColumn } from 'element-plus';
 import { useHighlightsStore } from '@/stores/highlights';
 import { storeToRefs } from 'pinia';
 import { differenceWith, isEqual } from 'lodash';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-// import { localforage } from 'localforage';
+import * as Api from '@/api/highlight';
+import * as DB from '@/utils/db';
 
 const highlightStore = useHighlightsStore();
 const { replace } = highlightStore;
@@ -16,9 +15,7 @@ const highlighter = inject('highlighter');
 
 watch(() => currentHighlights.value.length, () => {
   replace(currentHighlights.value);
-  axios.post('/update', { highlights: highlighter.value.instance.serialize() }).then(response => {
-    console.log(response);
-  });
+  Api.update({ highlights: highlighter.value.instance.serialize() });
 });
 
 watch(highlights, (current) => {
@@ -34,15 +31,14 @@ watch(highlights, (current) => {
 }, { deep: true });
 
 onMounted(() => {
-  const mock = new MockAdapter(axios);
-  mock.onPost('/update').reply(async function (actual) {
-    const data = JSON.parse(actual.data);
-    console.log(data);
-    // console.log(actual);
-    return [200, {  }];
-  });
+  DB.highlights.getItem('highlights').then(res => {
+    highlighter.value.instance.deserialize(res);
+    highlighter.value.instance.highlights.forEach(ht => {
+      currentHighlights.value.push(ht);
+    });
+    replace(highlighter.value.instance.highlights);
+  })
 });
-
 
 </script>
 
