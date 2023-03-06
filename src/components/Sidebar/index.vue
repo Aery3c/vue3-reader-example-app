@@ -17,6 +17,10 @@ function handleClickMoreBtn (highlight) {
   remove(highlight);
 }
 
+function handleClickCardHighlightText (highlight) {
+  highlight.scrollIntoView({ scrollMode: 'if-needed', behavior: 'smooth' });
+}
+
 </script>
 
 <template>
@@ -37,7 +41,9 @@ function handleClickMoreBtn (highlight) {
             </ElPopconfirm>
           </div>
         </template>
-        {{ highlight.getText() }}
+        <div class="card-body" @click="handleClickCardHighlightText(highlight)">
+          {{ highlight.getText() }}
+        </div>
       </ElCard>
     </ElSpace>
   </ElScrollbar>
@@ -54,6 +60,9 @@ function handleClickMoreBtn (highlight) {
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+    .card-body {
+      cursor: pointer;
     }
   }
 }
