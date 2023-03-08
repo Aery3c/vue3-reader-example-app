@@ -2,6 +2,7 @@
 import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElButton, ElIcon } from 'element-plus';
 import { Sunny, Moon } from '@element-plus/icons-vue';
 import { useDark, useToggle } from '@vueuse/core';
+import logo from '../../assets/logo.svg';
 
 const isDark = useDark();
 const toggle = useToggle(isDark);
@@ -12,7 +13,7 @@ const toggle = useToggle(isDark);
 	<header>
 		<nav class="nav-bar">
 			<a class="logo-container" href="https://github.com/Aery3c/highlighter/">
-				<img alt="Vue logo" class="logo" src="../../assets/logo.svg" width="40" height="40" />
+				<img alt="Vue logo" class="logo" :src="logo" width="40" height="40" />
 				<span>Vue Highlighter</span>
 			</a>
 
